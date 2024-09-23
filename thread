@@ -1,0 +1,18 @@
+# models.py
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+import threading
+
+class MyModel(models.Model):
+    name = models.CharField(max_length=50)
+
+@receiver(post_save, sender=MyModel)
+def my_model_saved(sender, instance, **kwargs):
+    print(f"Signal received in thread: {threading.get_ident()}")
+
+# Now if we save an instance of MyModel:
+if __name__ == "__main__":
+    print(f"Main thread: {threading.get_ident()}")
+    my_instance = MyModel(name="Test")
+    my_instance.save()
